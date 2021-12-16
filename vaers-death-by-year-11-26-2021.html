@@ -1,0 +1,129 @@
+<html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+	<style>
+
+	.axis {
+	  font: 10px sans-serif;
+	}
+
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+
+    .footer {
+        font-size: 10px;
+    }
+
+	</style>
+</head>
+
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+var margin = {top: 20, right: 20, bottom: 70, left: 40},
+    width = 1000 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+var data = '[{"year":1990,"diedcount":80},{"year":1991,"diedcount":166},{"year":1992,"diedcount":228},{"year":1993,"diedcount":234},{"year":1994,"diedcount":237},{"year":1995,"diedcount":158},{"year":1996,"diedcount":151},{"year":1997,"diedcount":173},{"year":1998,"diedcount":172},{"year":1999,"diedcount":179},{"year":2000,"diedcount":212},{"year":2001,"diedcount":225},{"year":2002,"diedcount":187},{"year":2003,"diedcount":265},{"year":2004,"diedcount":208},{"year":2005,"diedcount":215},{"year":2006,"diedcount":220},{"year":2007,"diedcount":262},{"year":2008,"diedcount":333},{"year":2009,"diedcount":337},{"year":2010,"diedcount":319},{"year":2011,"diedcount":331},{"year":2012,"diedcount":316},{"year":2013,"diedcount":339},{"year":2014,"diedcount":358},{"year":2015,"diedcount":377},{"year":2016,"diedcount":437},{"year":2017,"diedcount":467},{"year":2018,"diedcount":535},{"year":2019,"diedcount":605},{"year":2020,"diedcount":420},{"year":2021,"diedcount":19135}]';
+  data = JSON.parse(data);
+  data.forEach(function(d) {
+    d.date = +d.year;
+    d.value = +d.diedcount;
+  });
+	
+  x.domain(data.map(function(d) { return d.date; }));
+  
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+  
+  svg.append("text")
+      .attr("x", width/2)
+      .attr("y", margin.top)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("Vaccine Adverse Event Reporting System - Deaths By Year (As of Nov 26th, 2021)")
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Deaths (Died)");
+  
+  let bars = svg.selectAll('.bar')
+    .data(data)
+    .enter()
+    .append("g");
+
+  bars.append("rect")
+      .style("fill", "steelblue")
+      .attr("x", function(d) { return x(d.date); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); });
+
+  bars.append("text")
+      .text(function(d) { 
+        return d.value;
+      })
+      .attr("x", function(d){
+        return x(d.date) + x.rangeBand()/2;
+      })
+      .attr("y", function(d){
+        return y(d.value);
+      })
+      .attr("font-family" , "sans-serif")
+      .attr("font-size" , "10px")
+      .attr("fill" , "black")
+      .attr("text-anchor", "middle");
+
+</script>
+</body>
+
+<div class="footer">
+    <p>Note: The VAERS data was imported into a mysql DB using this project: <a href="https://github.com/rcorbin2018/vaers-tools">vaers-tools</a></p>
+    <p>The query used for this bar chart: <br> SELECT YEAR(RECVDATE) as year, count(DIED) as diedcount from VAERSDATA where DIED = 'Y' GROUP BY year</p>
+</div>
+
+</html>

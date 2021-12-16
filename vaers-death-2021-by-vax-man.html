@@ -1,0 +1,82 @@
+<html>
+    <!DOCTYPE html>
+    <meta charset="utf-8">
+    <head>
+        <style>
+        .footer {
+            font-size: 10px;
+        }
+        </style>
+    </head>
+    <body>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    
+    <p>Vaccine Adverse Event Reporting System - Deaths By Vaccine Manufacturer - Year 2021 (As of Nov 26th, 2021)</p>
+    
+    <div id="pie"></div>
+
+    <script>
+        var width = 450
+            height = 450
+            margin = 40
+        var radius = Math.min(width, height) / 2 - margin
+        
+        var svg = d3.select("#pie")
+          .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+          .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        
+        function createlocal() {
+            var data = {"Pfizer":"12939","Moderna":"4895","JandJ":"1447"};
+            createPie(data);
+        }
+        
+        function createPie(data) {
+        var color = d3.scaleOrdinal()
+          .domain(data)
+          .range(d3.schemeDark2)
+        
+        var pie = d3.pie()
+          .value(function(d) {return d.value; })
+        var data_ready = pie(d3.entries(data))
+        
+        svg
+          .selectAll('whatever')
+          .data(data_ready)
+          .enter()
+          .append('path')
+          .attr('d', d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius)
+          )
+          .attr('fill', function(d){ return(color(d.data.key)) })
+          .attr("stroke", "white")
+          .style("stroke-width", "2px")
+          .style("opacity", 1)
+    
+        var arcGenerator = d3.arc().innerRadius(0).outerRadius(radius)
+    
+        svg
+          .selectAll('whatever')
+          .data(data_ready)
+          .enter()
+          .append('text')
+          .text(function(d){ return d.data.key + " - (" + d.data.value + " Died)"})
+          .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+          .style("text-anchor", "middle")
+          .style("font-size", 17)
+        };
+    
+        createlocal();
+        </script>
+    
+    </body>
+
+    <div class="footer">
+        <p>Note: The VAERS data was imported into a mysql DB using this project: <a href="https://github.com/rcorbin2018/vaers-tools">vaers-tools</a></p>
+        <p>The query used for this bar chart: <br> SELECT sum(case when VAERSVAX.VAX_MANU like '%PFIZER%' then 1 else 0 end) as Pfizer, sum(case when VAERSVAX.VAX_MANU like '%MODERNA%' then 1 else 0 end) as Moderna, sum(case when VAERSVAX.VAX_MANU like '%JANSSEN%' then 1 else 0 end) as JandJ FROM VAERSDATA INNER JOIN VAERSVAX ON VAERSDATA.VAERS_ID = VAERSVAX.VAERS_ID WHERE YEAR(VAERSDATA.RECVDATE) > 2020 and VAERSVAX.VAX_TYPE = 'COVID19' and VAERSDATA.DIED = 'Y'</p>
+    </div>
+</html>

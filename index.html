@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="vaersdataviewer.css">
+        <title>Vaers Data Viewer</title>
+        <script>
+          var hamburger;
+          var navMenu;
+          window.onload = function() {
+            hamburger = document.querySelector(".hamburger");
+            navMenu = document.querySelector(".nav-menu");
+            hamburger.addEventListener("click", mobileMenu);
+          }
+          function mobileMenu() {
+              hamburger.classList.toggle("active");
+              navMenu.classList.toggle("active");
+          }
+        </script>
+    </head>
+    <body>
+        <!-- Header -->
+        <section id="header">
+            <div class="header container">
+              <div class="nav-bar">
+                <div class="site-name">
+                  <a href="#home">
+                    <h1>Vaers Data Viewer</h1>
+                  </a>
+                </div>
+                <nav class="navbar">
+                  <ul class="nav-menu">
+                      <li class="nav-item">
+                          <a href="vaers-death-by-year-11-26-2021.html" class="nav-link">Deaths By Year</a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="vaers-death-2021-by-vax-man.html" class="nav-link">2021 Deaths By Vax Manufacturer</a>
+                      </li>
+                  </ul>
+                  <div class="hamburger">
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                      <span class="bar"></span>
+                  </div>
+                </nav>
+              </div>
+            </div>
+        </section>
+        <!-- End Header -->
+        <section id="footer">
+          <div class="footer container">
+            <p>More Data Views coming soon...</p>
+          </div>
+        </section>
+    </body>
+</html>
